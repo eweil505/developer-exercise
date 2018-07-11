@@ -100,15 +100,46 @@ class GameTest < Test::Unit::TestCase
     assert_equal @game.winner, nil
   end
 
-  def player_eval_hand_returns_sum_if_not_blackjack_or_bust
-    @first_card = Card.new(:hearts, :ten, 10)
-    @second_card = Card.new(:spades, :5, 5)
-    @game.player.deck.insert(0, @first_card, @second_card)
-    assert_equal @game.player.eval_hand, 15
+  def players_and_dealers_add_cards_using_draw_card_method
+    player_draw = @game.player.draw_card
+    assert_instance_of Card, player_draw
+
+    dealer_draw = @game.dealer.draw_card
+    assert_instance_of Card, dealer_draw
+
+    #reset player and dealer hands for next test
+    @game.player.hand = []
+    @game.dealer.hand = []
+
   end
 
-  def dealer_stays_if_hand_equals_or_is_greater_than_17
-    
+  def player_eval_hand_returns_sum_if_not_blackjack_or_bust
+    first_card = @game.player.draw_card
+    second_card = @game.player.draw_card
+    sum = first_card.value + second_card.value
+    return_val = @game.player.eval_hand
+    if return_val == 21
+      assert_equal @game.winner, @game.player
+    elsif return_val > 21
+      assert_equal @game.winner, @game.dealer
+    else
+      assert_equal return_val, sum
+    end
+  end
+
+  def game_continues_if_hand_equals_or_is_greater_than_17
+    first_card = @game.deck.deal_card
+    second_card = @game.deck.deal_card
+    sum = first_card.value + second_card.value
+    return_val = @game.player.eval_hand
+    if return_val == 21
+      assert_equal @game.winner, @game.player
+    elsif return_val > 21
+      assert_equal @game.winner, @game.dealer
+    else
+      assert_equal return_val, sum
+    end
+
   end
 
     
