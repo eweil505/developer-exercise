@@ -81,11 +81,35 @@ class DeckTest < Test::Unit::TestCase
   
   def test_dealt_card_should_not_be_included_in_playable_cards
     card = @deck.deal_card
-    assert(@deck.playable_cards.include?(card))
+    includes_card = @deck.playable_cards.include?(card)
+    assert(includes_card == false)
   end
 
   def test_shuffled_deck_has_52_playable_cards
     @deck.shuffle
     assert_equal @deck.playable_cards.size, 52
   end
+end
+
+class GameTest < Test::Unit::TestCase
+  def setup
+    @game = Game.new
+  end
+  
+  def game_starts_with_winner_as_nil
+    assert_equal @game.winner, nil
+  end
+
+  def player_eval_hand_returns_sum_if_not_blackjack_or_bust
+    @first_card = Card.new(:hearts, :ten, 10)
+    @second_card = Card.new(:spades, :5, 5)
+    @game.player.deck.insert(0, @first_card, @second_card)
+    assert_equal @game.player.eval_hand, 15
+  end
+
+  def dealer_stays_if_hand_equals_or_is_greater_than_17
+    
+  end
+
+    
 end
